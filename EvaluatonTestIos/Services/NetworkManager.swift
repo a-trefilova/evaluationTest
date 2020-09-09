@@ -7,12 +7,12 @@
 //
 
 import Foundation
-
+import UIKit
 class NetworkManager {
     
     let mainUrl = URL(string: "https://itunes.apple.com/search?")
     var searchResults = [SearchItem]()
-    
+    lazy var urlSession = URLSession.shared
     
     func getData(by searchTerm: String, entity: String?, page: Int, limit: Int, completion: @escaping ([SearchItem]) -> Void) {
             guard let mainUrl = mainUrl else { return }
@@ -29,7 +29,7 @@ class NetworkManager {
             print(requestUrl)
             var request = URLRequest(url: requestUrl)
             request.httpMethod = "GET"
-        let dataTask = URLSession.shared.dataTask(with: request) { (data, resp, err) in
+        let dataTask = urlSession.dataTask(with: request) { (data, resp, err) in
             if let err = err { print("Request Error occured: \(err)") }
             guard let data = data else { return }
             do {

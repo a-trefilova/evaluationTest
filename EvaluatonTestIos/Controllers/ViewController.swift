@@ -23,6 +23,7 @@ class ViewController: UIViewController {
     private let bcImageView: UIImageView = {
         let imageView = UIImageView()
         let image = UIImage(named: "background")
+        imageView.image = image
         return imageView
     }()
     private var searchController = UISearchController(searchResultsController: nil)
@@ -60,9 +61,9 @@ class ViewController: UIViewController {
     
     private func setUpBackgroundView() {
         
-        bcImageView.contentMode = .scaleAspectFill
-        bcImageView.frame.size.height = collectionView.frame.size.height
-        bcImageView.frame.size.width = collectionView.frame.size.width
+        bcImageView.contentMode = .scaleAspectFit
+        bcImageView.frame.size.height = collectionView.frame.size.height / 2
+        bcImageView.frame.size.width = collectionView.frame.size.width / 2
         bcImageView.center = self.view.center
         collectionView.backgroundView = bcImageView
         
@@ -201,7 +202,13 @@ extension ViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         
         getDataFromApi(by: searchController.searchBar.text!)
-        
+//        if collectionView.numberOfItems(inSection: <#T##Int#>) == 0  {
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
+//                let alert = AlertManager.createAlert(with: "OOps!", message: "Nothing has been found. Please, try again or check the internet connection", prefferedStyle: .alert, actions: [UIAlertAction(title: "Try again", style: .destructive)])
+//                self.present(alert, animated: true, completion: nil)
+//            }
+//            
+//        }
     }
     
     private func getDataFromApi(by word: String) {
@@ -234,6 +241,7 @@ extension ViewController: UISearchBarDelegate {
 
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        bcImageView.isHidden = true
         lastSearchTerm = searchText
     }
     

@@ -31,8 +31,8 @@ class DetailViewController: UIViewController {
             headerView.albumName.text = searchItems?.first?.collectionName
             headerView.artistName.text = searchItems?.first?.artistName
             let string = searchItems?.first?.releaseDate
-            let year = string?.dropLast(16)
-            headerView.yearLabel.text = String(year!)
+            guard let year = string?.dropLast(16) else { return }
+            headerView.yearLabel.text = String(year)
             guard let url = URL(string: (searchItems?.first?.artworkUrl100)!) else { return }
             Nuke.loadImage(with: url, into: headerView.albumImaeView)
             self.tableView.tableHeaderView = headerView
