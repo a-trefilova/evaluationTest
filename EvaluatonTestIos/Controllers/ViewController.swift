@@ -9,65 +9,117 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var results = [SearchItem]()
+    //var placeholder = [SearchItem]()
+    var lastSearchTerm: String = ""
+    var lastSearch = [SearchItem]()
+    var searchResults = [SearchItem]()
     var nm = NetworkManager()
     var page: Int = 1
     
-    //private var searchCon
+    
+    private let bcImageView: UIImageView = {
+        let imageView = UIImageView()
+        let image = UIImage(named: "background")
+        return imageView
+    }()
+    private var searchController = UISearchController(searchResultsController: nil)
+    private var searchBarIsEmpty: Bool {
+        guard let text = searchController.searchBar.text else { return false }
+        return text.isEmpty
+    }
+    private var isFiltering: Bool {
+        if searchController.isActive && !searchBarIsEmpty {
+            return true
+        } else {
+            return false
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
-        
         collectionView.register(UINib(nibName: "SearchCell", bundle: nil), forCellWithReuseIdentifier: SearchCell.reuseId)
-        getData()
-        
-        
+        setUpSearchBar()
+        setUpBackgroundView()
+        //setUpNavBar()
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        if lastSearch.count == 0 && searchResults.count == 0 {
+            bcImageView.isHidden = false
 
-
-    private func getData() {
-        nm.getData(by: "black", entity: nil, page: page, limit: 20) { (results) in
-
-            for item in results {
-                if !self.results.contains(where: {$0.collectionName == item.collectionName}) {
-                    self.results.append(item)
-                }
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-                }
-                
-            }
-            
+        } else {
+            bcImageView.isHidden = true
         }
     }
     
-    private func calculateSizeOfCells() -> CGSize {
-        let screenSize = UIScreen.main.bounds
-        let width = screenSize.width
-        let height = screenSize.height
-        let widthOfCell = width/2
-        let heightOfCell = height/2
+    private func setUpBackgroundView() {
         
-        return CGSize(width: widthOfCell, height: heightOfCell)
+        bcImageView.contentMode = .scaleAspectFill
+        bcImageView.frame.size.height = collectionView.frame.size.height
+        bcImageView.frame.size.width = collectionView.frame.size.width
+        bcImageView.center = self.view.center
+        collectionView.backgroundView = bcImageView
+        
+    }
+
+    private func setUpSearchBar() {
+        navigationItem.title = "Search"
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search album or song"
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
+        definesPresentationContext = true
+        navigationController?.navigationBar.addSubview(searchController.searchBar)
+        searchController.searchBar.delegate = self
     }
     
-    private func loadingMoreData() {
-        page =  page + 1
-        nm.getData(by: "black", entity: nil, page: page, limit: 20) { (items) in
-            for item in items {
-                if !self.results.contains(where: {$0.collectionName == item.collectionName}) {
-                    self.results.append(item)
+///
+    private func getDataForLastSearch(by term: String) {
+        
+        nm.getData(by: term, entity: nil, page: page, limit: 20) { (results) in
+            var array = [SearchItem]()
+            for item in results {
+                if !array.contains(where: {$0.collectionName == item.collectionName}) {
+                    array.append(item)
+                }
+
+                self.lastSearch = array.sorted {
+                    var isSorted = false
+                    if let first = $0.collectionName, let second = $1.collectionName {
+                        isSorted = first < second
+                    }
+                    return isSorted
                 }
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
                 }
-                
+
             }
-            
+
+        }
+    }
+    
+///Method for loading more data from api, by the way, variables "page"  and "limit" are responsible for parameter "offset" (for more details see NetworkManager.swift)
+    private func loadingMoreData(by term: String) {
+        page =  page + 1
+        nm.getData(by: term, entity: nil, page: page, limit: 50) { (items) in
+            for item in items {
+                if !self.searchResults.contains(where: {$0.collectionName == item.collectionName}) {
+                    self.searchResults.append(item)
+                }
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+
+            }
+
         }
     }
     
@@ -75,6 +127,7 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
     }
@@ -87,50 +140,41 @@ extension ViewController: UICollectionViewDataSource {
         1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        results.count
+        
+        if isFiltering == true {
+            return searchResults.count
+        } else {
+            return lastSearch.count
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: SearchCell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchCell.reuseId, for: indexPath) as! SearchCell
-        let item = results[indexPath.item]
+        
+        let item = isFiltering ? searchResults[indexPath.item] : lastSearch[indexPath.item]
         //cell.titleLabel.text = item.artistName
         cell.cellItem = item
         cell.configureCell()
-        if indexPath.item == results.count - 1 {
-            loadingMoreData()
+        if indexPath.item == searchResults.count - 1 {
+            guard let text = searchController.searchBar.text else { return cell }
+            loadingMoreData(by: text)
         }
         
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        //calculateSizeOfCells()
-//        let flowayout = collectionViewLayout as? UICollectionViewFlowLayout
-//        let space: CGFloat = (flowayout?.minimumInteritemSpacing ?? 0.0) + (flowayout?.sectionInset.left ?? 0.0) + (flowayout?.sectionInset.right ?? 0.0)
-//        let size:CGFloat = (collectionView.frame.size.width - space) / 2.0
-//        return CGSize(width: size, height: size)
         let padding: CGFloat = 30
         let collectonViewSize = collectionView.frame.size.width - padding
         return CGSize(width: collectonViewSize/2, height: collectonViewSize/2)
-        
     }
-    
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-//        return 10
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-//        return 10
-//    }
-//
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-//        UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-//    }
+
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let item = results[indexPath.item]
+        let item = isFiltering ? searchResults[indexPath.item] : lastSearch[indexPath.item]
         let detailVC = DetailViewController()
-        nm.getData(by: item.collectionName ?? "black", entity: "musicTrack", page: 0, limit: 50) { (results) in
+        guard let collectionName = item.collectionName else { return }
+        nm.getData(by: collectionName, entity: "musicTrack", page: 0, limit: 50) { (results) in
             var resultsArray = [SearchItem]()
             for result in results {
                 if result.collectionId == item.collectionId {
@@ -149,6 +193,51 @@ extension ViewController: UICollectionViewDataSource {
     }
 }
 
-extension ViewController: UISearchBarDelegate {
+
+
+extension ViewController: UISearchResultsUpdating {
     
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        
+        getDataFromApi(by: searchController.searchBar.text!)
+        
+    }
+    
+    private func getDataFromApi(by word: String) {
+        nm.getData(by: word, entity: nil, page: 0, limit: 50) { (results) in
+            var resultsArray = [SearchItem]()
+            for result in results {
+                if !resultsArray.contains(where: {$0.collectionId == result.collectionId}) {
+                    resultsArray.append(result)
+                }
+            }
+            self.searchResults = resultsArray
+            
+            self.searchResults = self.searchResults.sorted {
+                var isSorted = false
+                if let first = $0.collectionName, let second = $1.collectionName {
+                    isSorted = first < second
+                }
+                return isSorted
+            }
+            
+            
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+        }
+    }
+}
+
+extension ViewController: UISearchBarDelegate {
+
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        lastSearchTerm = searchText
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        getDataForLastSearch(by: lastSearchTerm)
+    }
 }

@@ -10,6 +10,8 @@ import UIKit
 
 class TableViewCell: UITableViewCell {
 
+    @IBOutlet weak var songName: UILabel!
+    @IBOutlet weak var numberOfSong: UILabel!
     
     static let reuseId = "TableCell"
     
@@ -17,7 +19,8 @@ class TableViewCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
     }
-
+    
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 

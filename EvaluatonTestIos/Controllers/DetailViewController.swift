@@ -24,7 +24,7 @@ class DetailViewController: UIViewController {
         
     }
 
-
+    
     
     private func setUpHeaderView() {
         if let headerView = Bundle.main.loadNibNamed("HeaderView", owner: self, options: nil)?.first as? HeaderView {
@@ -54,9 +54,9 @@ extension DetailViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseId, for: indexPath) as! TableViewCell
-        let item = searchItems?[indexPath.row]
-        cell.textLabel?.text = item?.trackName
-        
+        guard let item = searchItems?[indexPath.row] else { return cell }
+        cell.textLabel?.text = item.trackName
+        cell.numberOfSong.text = String(indexPath.row + 1) + "."
         return cell
     }
     
