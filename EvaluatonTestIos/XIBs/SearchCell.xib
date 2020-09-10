@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="16097" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <device id="retina6_1" orientation="portrait" appearance="dark"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="16087"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
@@ -22,6 +22,7 @@
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="FRu-lk-TX4">
                                 <rect key="frame" x="0.0" y="0.0" width="160" height="160"/>
                                 <constraints>
+                                    <constraint firstAttribute="width" constant="160" id="clx-AR-nL6"/>
                                     <constraint firstAttribute="height" constant="160" id="xy6-Ww-Yu9"/>
                                 </constraints>
                             </imageView>
@@ -29,21 +30,21 @@
                                 <rect key="frame" x="0.0" y="160" width="160" height="60"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="160" id="EBx-fW-vKK"/>
-                                    <constraint firstAttribute="height" constant="60" id="Qsz-HE-ktp"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="Qsz-HE-ktp"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                                <nil key="textColor"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="bottom" secondItem="ywq-lV-ggh" secondAttribute="bottom" constant="3" id="718-Wf-hwt"/>
                             <constraint firstItem="FRu-lk-TX4" firstAttribute="leading" secondItem="4Kj-K7-aRw" secondAttribute="leading" id="7i1-hJ-fp7"/>
                             <constraint firstItem="ywq-lV-ggh" firstAttribute="top" secondItem="FRu-lk-TX4" secondAttribute="bottom" id="BZp-zv-8Pb"/>
+                            <constraint firstItem="ywq-lV-ggh" firstAttribute="centerX" secondItem="4Kj-K7-aRw" secondAttribute="centerX" id="H5E-Tg-kZd"/>
+                            <constraint firstItem="ywq-lV-ggh" firstAttribute="leading" secondItem="4Kj-K7-aRw" secondAttribute="leading" id="Lsq-e6-rfR"/>
+                            <constraint firstAttribute="trailing" secondItem="ywq-lV-ggh" secondAttribute="trailing" id="qQg-wj-fFs"/>
                             <constraint firstItem="FRu-lk-TX4" firstAttribute="top" secondItem="4Kj-K7-aRw" secondAttribute="top" id="sLc-3x-C6d"/>
-                            <constraint firstAttribute="trailing" secondItem="ywq-lV-ggh" secondAttribute="trailing" id="tEl-yz-AQe"/>
-                            <constraint firstItem="ywq-lV-ggh" firstAttribute="leading" secondItem="4Kj-K7-aRw" secondAttribute="leading" id="u5c-b0-qDk"/>
                             <constraint firstAttribute="trailing" secondItem="FRu-lk-TX4" secondAttribute="trailing" id="wBK-g4-8rT"/>
                         </constraints>
                     </view>

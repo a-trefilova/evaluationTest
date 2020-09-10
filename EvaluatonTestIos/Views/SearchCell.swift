@@ -20,6 +20,7 @@ class SearchCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        setUpTitleLabel()
         // Initialization code
     }
      
@@ -30,5 +31,22 @@ class SearchCell: UICollectionViewCell {
         Nuke.loadImage(with: url, into: albumImageView)
         albumImageView.contentMode = .scaleAspectFill
         albumImageView.layer.cornerRadius = 20
+        
+    }
+    
+    private func setUpTitleLabel() {
+        let bcColor = UIColor { (traitCollection: UITraitCollection) -> UIColor in
+            switch traitCollection.userInterfaceStyle {
+                
+            case .unspecified, .light:
+                return #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            case .dark:
+                return #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+            @unknown default:
+                return #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            }
+        }
+        titleLabel.textColor = bcColor
+        
     }
 }

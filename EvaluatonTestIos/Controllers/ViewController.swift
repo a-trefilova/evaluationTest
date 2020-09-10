@@ -46,6 +46,7 @@ class ViewController: UIViewController {
         collectionView.register(UINib(nibName: "SearchCell", bundle: nil), forCellWithReuseIdentifier: SearchCell.reuseId)
         setUpSearchBar()
         setUpBackgroundView()
+        setUpCollectionView()
         //setUpNavBar()
     }
     
@@ -68,6 +69,21 @@ class ViewController: UIViewController {
         bcImageView.alpha = 0.5
         collectionView.backgroundView = bcImageView
         
+    }
+    
+    private func setUpCollectionView() {
+        let bcColor = UIColor { (traitCollection: UITraitCollection) -> UIColor in
+            switch traitCollection.userInterfaceStyle {
+                
+            case .unspecified, .light:
+                return #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+            case .dark:
+                return #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+            @unknown default:
+                return #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+            }
+        }
+        collectionView.backgroundColor = bcColor
     }
 
     private func setUpSearchBar() {
@@ -183,7 +199,6 @@ extension ViewController: UICollectionViewDataSource {
                     resultsArray.append(result)
                 }
             }
-            print(resultsArray)
             DispatchQueue.main.async {
                 detailVC.searchItems = resultsArray
                 detailVC.loadViewIfNeeded()
@@ -203,13 +218,7 @@ extension ViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         
         getDataFromApi(by: searchController.searchBar.text!)
-//        if collectionView.numberOfItems(inSection: <#T##Int#>) == 0  {
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 7) {
-//                let alert = AlertManager.createAlert(with: "OOps!", message: "Nothing has been found. Please, try again or check the internet connection", prefferedStyle: .alert, actions: [UIAlertAction(title: "Try again", style: .destructive)])
-//                self.present(alert, animated: true, completion: nil)
-//            }
-//            
-//        }
+
     }
     
     private func getDataFromApi(by word: String) {
@@ -243,7 +252,11 @@ extension ViewController: UISearchBarDelegate {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         bcImageView.isHidden = true
-        lastSearchTerm = searchText
+        guard let text = searchBar.text else {
+            bcImageView.isHidden = false
+            return
+        }
+        lastSearchTerm = text
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
