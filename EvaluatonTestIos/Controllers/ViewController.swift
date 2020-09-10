@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     var lastSearch = [SearchItem]()
     var searchResults = [SearchItem]()
     var nm = NetworkManager()
-    var page: Int = 1
+    var page: Int = 0
     
     
     private let bcImageView: UIImageView = {
@@ -61,10 +61,11 @@ class ViewController: UIViewController {
     
     private func setUpBackgroundView() {
         
-        bcImageView.contentMode = .scaleAspectFit
+        bcImageView.contentMode = .bottom
         bcImageView.frame.size.height = collectionView.frame.size.height / 2
         bcImageView.frame.size.width = collectionView.frame.size.width / 2
-        bcImageView.center = self.view.center
+        //bcImageView.center = self.view.center
+        bcImageView.alpha = 0.5
         collectionView.backgroundView = bcImageView
         
     }

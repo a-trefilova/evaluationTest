@@ -35,7 +35,9 @@ class DetailViewController: UIViewController {
             headerView.yearLabel.text = String(year)
             guard let url = URL(string: (searchItems?.first?.artworkUrl100)!) else { return }
             Nuke.loadImage(with: url, into: headerView.albumImaeView)
+            headerView.albumImaeView.layer.cornerRadius = 20
             self.tableView.tableHeaderView = headerView
+            headerView.center = self.tableView.tableHeaderView!.center
         }
        
         
