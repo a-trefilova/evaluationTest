@@ -8,11 +8,20 @@
 
 import Foundation
 import UIKit
+
+protocol URLSessionProtocol {
+    func dataTask(with url: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask
+}
+
+
+extension URLSession: URLSessionProtocol {
+    
+}
 class NetworkManager {
     
     let mainUrl = URL(string: "https://itunes.apple.com/search?")
     var searchResults = [SearchItem]()
-    lazy var urlSession = URLSession.shared
+    lazy var urlSession: URLSessionProtocol = URLSession.shared
     
     func getData(by searchTerm: String, entity: String?, page: Int, limit: Int, completion: @escaping ([SearchItem]) -> Void) {
             guard let mainUrl = mainUrl else { return }
@@ -35,12 +44,10 @@ class NetworkManager {
             do {
                 let jsonDecoder = JSONDecoder()
                 let resultsArray = try jsonDecoder.decode(Results.self, from: data)
-                //
                 guard let results = resultsArray.results else { return }
-                //print(results)
                 completion(results)
-            } catch {
-
+            } catch let error {
+                print("JSON Decoder errror occured: \(error)")
             }
             
         }

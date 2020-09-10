@@ -30,6 +30,24 @@ class ApiTests: XCTestCase {
         getData()
         XCTAssertEqual(mockUrlSession.urlComponents?.host, "itunes.apple.com")
     }
+    
+    func testManagerUsesCorrectPath() {
+        getData()
+        XCTAssertEqual(mockUrlSession.urlComponents?.path, "/search")
+    }
+    
+    func testManagerUsesExpectedQueryParams() {
+        getData()
+        guard let queryItems = mockUrlSession.urlComponents?.queryItems else {
+            XCTFail()
+            return
+        }
+        let urlQueryTermName = URLQueryItem(name: "term", value: "Foo")
+        XCTAssertTrue(queryItems.contains(urlQueryTermName))
+    }
+        
+        
+        
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
     }
@@ -40,23 +58,12 @@ class ApiTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
 
 }
 
 extension ApiTests {
     
-    class MockUrlSession: URLSession {
+    class MockUrlSession: URLSessionProtocol {
         private let mockDataTask: MockDataTask
         
         var url: URL?
@@ -72,8 +79,8 @@ extension ApiTests {
         }
         
         
-        override func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
-            self.url = url
+        func dataTask(with url: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
+            self.url = url.url
             mockDataTask.completionHandler = completionHandler
             return mockDataTask
         }
