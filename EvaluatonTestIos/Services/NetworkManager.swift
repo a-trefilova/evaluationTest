@@ -27,7 +27,7 @@ class NetworkManager {
             guard let mainUrl = mainUrl else { return }
             var urlComponents = URLComponents(url: mainUrl, resolvingAgainstBaseURL: true)
             ///I've decided to limit data searching by media type "music" only
-            let parametres = ["term": searchTerm,
+            let parametres = ["term": String(searchTerm),
                               "entity": entity,
                               "media": "music",
                               "limit": "\(limit)",

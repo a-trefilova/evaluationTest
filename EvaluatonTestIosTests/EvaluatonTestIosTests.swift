@@ -35,11 +35,11 @@ class EvaluatonTestIosTests: XCTestCase {
 class CollectionViewCellTests: XCTestCase {
     
     var cell: SearchCell!
-    
+    var controller: ViewController!
     override func setUp() {
         super.setUp()
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let controller = storyboard.instantiateViewController(withIdentifier: String(describing: ViewController.self)) as! ViewController
+        controller = storyboard.instantiateViewController(withIdentifier: String(describing: ViewController.self)) as? ViewController
         controller.loadViewIfNeeded()
         let collectionView = controller.collectionView
         let datasource = FakeDataSource()
@@ -61,6 +61,8 @@ class CollectionViewCellTests: XCTestCase {
         cell.cellItem = searchItem
         XCTAssertEqual(cell.cellItem?.collectionName, searchItem.collectionName)
     }
+    
+
 }
 
 extension CollectionViewCellTests {
