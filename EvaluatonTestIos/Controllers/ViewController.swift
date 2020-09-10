@@ -11,11 +11,22 @@ import UIKit
 class ViewController: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
-    
-    //var placeholder = [SearchItem]()
-    var lastSearchTerm: String = ""
-    var lastSearch = [SearchItem]()
-    var searchResults = [SearchItem]()
+
+    var searchResults: [SearchItem]? {
+        didSet {
+            searchResults = searchResults?.sorted {
+                var isSorted = false
+                if let first = $0.collectionName, let second = $1.collectionName {
+                    isSorted = first < second
+                }
+                return isSorted
+            }
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
+            
+        }
+    }
     var nm = NetworkManager()
     var page: Int = 0
     
@@ -31,13 +42,6 @@ class ViewController: UIViewController {
         guard let text = searchController.searchBar.text else { return false }
         return text.isEmpty
     }
-    private var isFiltering: Bool {
-        if searchController.isActive && !searchBarIsEmpty {
-            return true
-        } else {
-            return false
-        }
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -52,12 +56,9 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if lastSearch.count == 0 && searchResults.count == 0 {
             bcImageView.isHidden = false
 
-        } else {
-            bcImageView.isHidden = true
-        }
+        
     }
     
     private func setUpBackgroundView() {
@@ -97,43 +98,16 @@ class ViewController: UIViewController {
         navigationController?.navigationBar.addSubview(searchController.searchBar)
         searchController.searchBar.delegate = self
     }
-    
-///
-    private func getDataForLastSearch(by term: String) {
-        
-        nm.getData(by: term, entity: nil, page: page, limit: 20) { (results) in
-            var array = [SearchItem]()
-            for item in results {
-                if !array.contains(where: {$0.collectionName == item.collectionName}) {
-                    array.append(item)
-                }
 
-                self.lastSearch = array.sorted {
-                    var isSorted = false
-                    if let first = $0.collectionName, let second = $1.collectionName {
-                        isSorted = first < second
-                    }
-                    return isSorted
-                }
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
-                }
-
-            }
-
-        }
-    }
     
 ///Method for loading more data from api, by the way, variables "page"  and "limit" are responsible for parameter "offset" (for more details see NetworkManager.swift)
     private func loadingMoreData(by term: String) {
         page =  page + 1
-        nm.getData(by: term, entity: nil, page: page, limit: 50) { (items) in
+        nm.getData(by: term, entity: nil, page: page, limit: 20) { (items) in
+            guard let results = self.searchResults else { return }
             for item in items {
-                if !self.searchResults.contains(where: {$0.collectionName == item.collectionName}) {
-                    self.searchResults.append(item)
-                }
-                DispatchQueue.main.async {
-                    self.collectionView.reloadData()
+                if !results.contains(where: {$0.collectionName == item.collectionName}) {
+                    self.searchResults?.append(item)
                 }
 
             }
@@ -158,27 +132,24 @@ extension ViewController: UICollectionViewDataSource {
         1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        if isFiltering == true {
-            return searchResults.count
-        } else {
-            return lastSearch.count
-        }
+
+        guard let searchResults = searchResults else { return 1}
+        return searchResults.count
+
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell: SearchCell = collectionView.dequeueReusableCell(withReuseIdentifier: SearchCell.reuseId, for: indexPath) as! SearchCell
-        
-        let item = isFiltering ? searchResults[indexPath.item] : lastSearch[indexPath.item]
-        //cell.titleLabel.text = item.artistName
-        cell.cellItem = item
-        cell.configureCell()
-        if indexPath.item == searchResults.count - 1 {
-            guard let text = searchController.searchBar.text else { return cell }
-            loadingMoreData(by: text)
-        }
-        
-        return cell
+            guard let searchResults = searchResults else  { return cell }
+            let item = searchResults[indexPath.item]
+            cell.cellItem = item
+            cell.configureCell()
+            if indexPath.item == searchResults.count - 1 {
+                guard let text = searchController.searchBar.text else { return cell }
+                loadingMoreData(by: text)
+            }
+            return cell
+
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -189,7 +160,8 @@ extension ViewController: UICollectionViewDataSource {
 
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let item = isFiltering ? searchResults[indexPath.item] : lastSearch[indexPath.item]
+        guard let searchResults = searchResults else  { return }
+        let item = searchResults[indexPath.item]
         let detailVC = DetailViewController()
         guard let collectionName = item.collectionName else { return }
         nm.getData(by: collectionName, entity: "musicTrack", page: 0, limit: 50) { (results) in
@@ -216,9 +188,9 @@ extension ViewController: UISearchResultsUpdating {
     
     
     func updateSearchResults(for searchController: UISearchController) {
-        
+        if let text = searchController.searchBar.text, text.count > 0 {
         getDataFromApi(by: searchController.searchBar.text!)
-
+        }
     }
     
     private func getDataFromApi(by word: String) {
@@ -230,19 +202,6 @@ extension ViewController: UISearchResultsUpdating {
                 }
             }
             self.searchResults = resultsArray
-            
-            self.searchResults = self.searchResults.sorted {
-                var isSorted = false
-                if let first = $0.collectionName, let second = $1.collectionName {
-                    isSorted = first < second
-                }
-                return isSorted
-            }
-            
-            
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
         }
     }
 }
@@ -256,10 +215,6 @@ extension ViewController: UISearchBarDelegate {
             bcImageView.isHidden = false
             return
         }
-        lastSearchTerm = text
     }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        getDataForLastSearch(by: lastSearchTerm)
-    }
+
 }

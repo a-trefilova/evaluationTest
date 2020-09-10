@@ -59,7 +59,7 @@ class CollectionViewCellTests: XCTestCase {
     func testConfigureCell() {
         let searchItem = SearchItem(wrapperType: .collection, kind: .song, artistId: nil, artistName: nil, collectionId: nil, collectionName: "Foo", collectionViewUrl: nil, trackId: nil, trackName: nil, trackViewUrl: nil, artworkUrl30: nil, artworkUrl60: nil, artworkUrl100: nil, releaseDate: nil)
         cell.cellItem = searchItem
-        XCTAssertEqual(cell.cellItem.collectionName, searchItem.collectionName)
+        XCTAssertEqual(cell.cellItem?.collectionName, searchItem.collectionName)
     }
 }
 

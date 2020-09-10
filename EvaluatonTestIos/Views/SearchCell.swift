@@ -11,7 +11,7 @@ import Nuke
 
 class SearchCell: UICollectionViewCell {
     
-    var cellItem: SearchItem!
+    var cellItem: SearchItem?
     
     @IBOutlet weak var albumImageView: UIImageView!
     @IBOutlet weak var titleLabel: UILabel!
@@ -25,6 +25,7 @@ class SearchCell: UICollectionViewCell {
     }
      
     func configureCell() {
+        guard let cellItem = cellItem else { return }
         titleLabel.text = cellItem.collectionName
         guard let urlString = cellItem.artworkUrl100 else { return }
         guard let url = URL(string: urlString) else { return }
