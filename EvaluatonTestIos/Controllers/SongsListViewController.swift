@@ -8,18 +8,18 @@
 
 import UIKit
 import Nuke
-class DetailViewController: UIViewController {
+class SongsListViewController: UIViewController {
 
    
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var songsListTableView: UITableView!
     
     var searchItems: [SearchItem]?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: TableViewCell.reuseId)
+        songsListTableView.dataSource = self
+        songsListTableView.delegate = self
+        songsListTableView.register(UINib(nibName: "TableViewCell", bundle: nil), forCellReuseIdentifier: TableViewCell.reuseId)
         setUpHeaderView()
         
     }
@@ -36,15 +36,15 @@ class DetailViewController: UIViewController {
             guard let url = URL(string: (searchItems?.first?.artworkUrl100)!) else { return }
             Nuke.loadImage(with: url, into: headerView.albumImaeView)
             headerView.albumImaeView.layer.cornerRadius = 20
-            self.tableView.tableHeaderView = headerView
-            headerView.center = self.tableView.tableHeaderView!.center
+            self.songsListTableView.tableHeaderView = headerView
+            headerView.center = self.songsListTableView.tableHeaderView!.center
         }
        
         
     }
 }
 
-extension DetailViewController: UITableViewDataSource, UITableViewDelegate {
+extension SongsListViewController: UITableViewDataSource, UITableViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         1

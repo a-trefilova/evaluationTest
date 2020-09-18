@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		1249041F2503DA1000685685 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1249041E2503DA1000685685 /* AppDelegate.swift */; };
 		124904212503DA1000685685 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 124904202503DA1000685685 /* SceneDelegate.swift */; };
-		124904232503DA1000685685 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 124904222503DA1000685685 /* ViewController.swift */; };
+		124904232503DA1000685685 /* AlbumsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 124904222503DA1000685685 /* AlbumsViewController.swift */; };
 		124904262503DA1000685685 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 124904242503DA1000685685 /* Main.storyboard */; };
 		124904292503DA1000685685 /* EvaluatonTestIos.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 124904272503DA1000685685 /* EvaluatonTestIos.xcdatamodeld */; };
 		1249042B2503DA1100685685 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1249042A2503DA1100685685 /* Assets.xcassets */; };
@@ -18,8 +18,8 @@
 		124904382503DA9500685685 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 124904372503DA9500685685 /* NetworkManager.swift */; };
 		1249043D250550FB00685685 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1249043B250550FB00685685 /* SearchCell.swift */; };
 		1249043E250550FB00685685 /* SearchCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1249043C250550FB00685685 /* SearchCell.xib */; };
-		12B8FDA12506322700C91694 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; productRef = 12B8FDA02506322700C91694 /* SwiftPackageProductDependency */; };
-		12B8FDA425063B1200C91694 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B8FDA225063B1200C91694 /* DetailViewController.swift */; };
+		12B8FDA12506322700C91694 /* Nuke in Frameworks */ = {isa = PBXBuildFile; productRef = 12B8FDA02506322700C91694 /* Nuke */; };
+		12B8FDA425063B1200C91694 /* SongsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B8FDA225063B1200C91694 /* SongsListViewController.swift */; };
 		12B8FDA525063B1200C91694 /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 12B8FDA325063B1200C91694 /* DetailViewController.xib */; };
 		12B8FDA825075F4A00C91694 /* TableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12B8FDA625075F4A00C91694 /* TableViewCell.swift */; };
 		12B8FDA925075F4A00C91694 /* TableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 12B8FDA725075F4A00C91694 /* TableViewCell.xib */; };
@@ -45,7 +45,7 @@
 		1249041B2503DA1000685685 /* EvaluatonTestIos.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EvaluatonTestIos.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1249041E2503DA1000685685 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		124904202503DA1000685685 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		124904222503DA1000685685 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		124904222503DA1000685685 /* AlbumsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumsViewController.swift; sourceTree = "<group>"; };
 		124904252503DA1000685685 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		124904282503DA1000685685 /* EvaluatonTestIos.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = EvaluatonTestIos.xcdatamodel; sourceTree = "<group>"; };
 		1249042A2503DA1100685685 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -55,7 +55,7 @@
 		124904372503DA9500685685 /* NetworkManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
 		1249043B250550FB00685685 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
 		1249043C250550FB00685685 /* SearchCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SearchCell.xib; sourceTree = "<group>"; };
-		12B8FDA225063B1200C91694 /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		12B8FDA225063B1200C91694 /* SongsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongsListViewController.swift; sourceTree = "<group>"; };
 		12B8FDA325063B1200C91694 /* DetailViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailViewController.xib; sourceTree = "<group>"; };
 		12B8FDA625075F4A00C91694 /* TableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableViewCell.swift; sourceTree = "<group>"; };
 		12B8FDA725075F4A00C91694 /* TableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TableViewCell.xib; sourceTree = "<group>"; };
@@ -74,7 +74,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				12B8FDA12506322700C91694 /* BuildFile in Frameworks */,
+				12B8FDA12506322700C91694 /* Nuke in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,8 +148,8 @@
 		12B8FDB22507CC2300C91694 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				124904222503DA1000685685 /* ViewController.swift */,
-				12B8FDA225063B1200C91694 /* DetailViewController.swift */,
+				124904222503DA1000685685 /* AlbumsViewController.swift */,
+				12B8FDA225063B1200C91694 /* SongsListViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -216,7 +216,7 @@
 			);
 			name = EvaluatonTestIos;
 			packageProductDependencies = (
-				12B8FDA02506322700C91694 /* SwiftPackageProductDependency */,
+				12B8FDA02506322700C91694 /* Nuke */,
 			);
 			productName = EvaluatonTestIos;
 			productReference = 1249041B2503DA1000685685 /* EvaluatonTestIos.app */;
@@ -269,7 +269,7 @@
 			);
 			mainGroup = 124904122503DA1000685685;
 			packageReferences = (
-				12B8FD9F2506322700C91694 /* RemoteSwiftPackageReference */,
+				12B8FD9F2506322700C91694 /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			productRefGroup = 1249041C2503DA1000685685 /* Products */;
 			projectDirPath = "";
@@ -313,14 +313,14 @@
 				124904382503DA9500685685 /* NetworkManager.swift in Sources */,
 				12B8FDB72508F63300C91694 /* AlertManager.swift in Sources */,
 				124904362503DA8200685685 /* DataModel.swift in Sources */,
-				124904232503DA1000685685 /* ViewController.swift in Sources */,
+				124904232503DA1000685685 /* AlbumsViewController.swift in Sources */,
 				12B8FDA825075F4A00C91694 /* TableViewCell.swift in Sources */,
 				1249043D250550FB00685685 /* SearchCell.swift in Sources */,
 				12B8FDAE2507BF4000C91694 /* HeaderView.swift in Sources */,
 				1249041F2503DA1000685685 /* AppDelegate.swift in Sources */,
 				124904212503DA1000685685 /* SceneDelegate.swift in Sources */,
 				124904292503DA1000685685 /* EvaluatonTestIos.xcdatamodeld in Sources */,
-				12B8FDA425063B1200C91694 /* DetailViewController.swift in Sources */,
+				12B8FDA425063B1200C91694 /* SongsListViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -587,7 +587,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		12B8FD9F2506322700C91694 /* RemoteSwiftPackageReference */ = {
+		12B8FD9F2506322700C91694 /* XCRemoteSwiftPackageReference "Nuke" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/kean/Nuke";
 			requirement = {
@@ -598,9 +598,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		12B8FDA02506322700C91694 /* SwiftPackageProductDependency */ = {
+		12B8FDA02506322700C91694 /* Nuke */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 12B8FD9F2506322700C91694 /* RemoteSwiftPackageReference */;
+			package = 12B8FD9F2506322700C91694 /* XCRemoteSwiftPackageReference "Nuke" */;
 			productName = Nuke;
 		};
 /* End XCSwiftPackageProductDependency section */

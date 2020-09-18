@@ -12,12 +12,12 @@ import UIKit
 
 class CollectionViewTests: XCTestCase {
 
-    var sut: ViewController!
+    var sut: AlbumsViewController!
     
     override func setUp() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let vc = storyboard.instantiateViewController(withIdentifier: String(describing: ViewController.self))
-        sut = vc as? ViewController
+        let vc = storyboard.instantiateViewController(withIdentifier: String(describing: AlbumsViewController.self))
+        sut = vc as? AlbumsViewController
         sut.loadViewIfNeeded()
     }
     
@@ -32,7 +32,7 @@ class CollectionViewTests: XCTestCase {
     
     
     func testWhenViewIsLoadedCollectionViewDatasourceEqualsCollectionViewDelegate() {
-        XCTAssertEqual(sut.collectionView.dataSource as? ViewController, sut.collectionView.delegate as? ViewController)
+        XCTAssertEqual(sut.collectionView.dataSource as? AlbumsViewController, sut.collectionView.delegate as? AlbumsViewController)
     }
     
     func testSelectedCellPushesDetailVC() {
@@ -41,7 +41,7 @@ class CollectionViewTests: XCTestCase {
         sut.loadViewIfNeeded()
         let searchItem = SearchItem(wrapperType: .collection, kind: .song, artistId: nil, artistName: nil, collectionId: nil, collectionName: "Foo", collectionViewUrl: nil, trackId: nil, trackName: nil, trackViewUrl: nil, artworkUrl30: nil, artworkUrl60: nil, artworkUrl100: nil, releaseDate: "Bar")
         sut.searchResults = [searchItem]
-        guard let detailVC = mockNavController.pushedVC as? DetailViewController else {
+        guard let detailVC = mockNavController.pushedVC as? SongsListViewController else {
             //XCTFail()
             return
         }

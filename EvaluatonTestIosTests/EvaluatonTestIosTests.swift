@@ -24,9 +24,9 @@ class EvaluatonTestIosTests: XCTestCase {
     func testInitialVCisViewControllerVC() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let navController = storyboard.instantiateInitialViewController() as! UINavigationController
-        let rootVC = navController.viewControllers.first as! ViewController
+        let rootVC = navController.viewControllers.first as! AlbumsViewController
         
-        XCTAssertTrue(rootVC is ViewController)
+        XCTAssertTrue(rootVC is AlbumsViewController)
     }
 
     
@@ -35,11 +35,11 @@ class EvaluatonTestIosTests: XCTestCase {
 class CollectionViewCellTests: XCTestCase {
     
     var cell: SearchCell!
-    var controller: ViewController!
+    var controller: AlbumsViewController!
     override func setUp() {
         super.setUp()
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        controller = storyboard.instantiateViewController(withIdentifier: String(describing: ViewController.self)) as? ViewController
+        controller = storyboard.instantiateViewController(withIdentifier: String(describing: AlbumsViewController.self)) as? AlbumsViewController
         controller.loadViewIfNeeded()
         let collectionView = controller.collectionView
         let datasource = FakeDataSource()

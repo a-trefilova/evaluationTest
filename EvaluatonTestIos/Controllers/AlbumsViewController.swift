@@ -8,10 +8,10 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class AlbumsViewController: UIViewController {
     
     @IBOutlet weak var mostRelevantRequestsTableView: UITableView!
-    @IBOutlet weak var collectionView: UICollectionView!
+    @IBOutlet weak var albumsCollectionView: UICollectionView!
 
     var searchResults: [SearchItem]? {
         didSet {
@@ -23,13 +23,13 @@ class ViewController: UIViewController {
                 return isSorted
             }
             DispatchQueue.main.async {
-                self.collectionView.reloadData()
+                self.albumsCollectionView.reloadData()
             }
             
         }
     }
     var nm = NetworkManager()
-    var page: Int = 0
+    var resultsPage: Int = 0
     var mostRelevantResultsStrings: [String]? {
         didSet {
             print("RESULTS ARE HERE")
@@ -52,13 +52,15 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         self.mostRelevantRequestsTableView.dataSource = self
         self.mostRelevantRequestsTableView.delegate = self
-        self.collectionView.dataSource = self
-        self.collectionView.delegate = self
-        collectionView.register(UINib(nibName: "SearchCell", bundle: nil), forCellWithReuseIdentifier: SearchCell.reuseId)
+        self.mostRelevantRequestsTableView.tableFooterView = UIView()
+        self.albumsCollectionView.dataSource = self
+        self.albumsCollectionView.delegate = self
+        albumsCollectionView.register(UINib(nibName: "SearchCell", bundle: nil), forCellWithReuseIdentifier: SearchCell.reuseId)
+        
         setUpSearchBar()
-        setUpBackgroundView()
+        setUpSearchCollectionBackgroundView()
         setUpCollectionView()
-        setUpTableViewConstraints()
+        setUpMostRelevantTableViewConstraints()
         //setUpNavBar()
     }
     
@@ -69,21 +71,21 @@ class ViewController: UIViewController {
         
     }
     
-    private func setUpTableViewConstraints() {
-        mostRelevantRequestsTableView.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor).isActive = true
-        mostRelevantRequestsTableView.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor).isActive = true
-        mostRelevantRequestsTableView.topAnchor.constraint(equalTo: collectionView.topAnchor).isActive = true
-        mostRelevantRequestsTableView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor).isActive = true
+    private func setUpMostRelevantTableViewConstraints() {
+        mostRelevantRequestsTableView.leadingAnchor.constraint(equalTo: albumsCollectionView.leadingAnchor).isActive = true
+        mostRelevantRequestsTableView.trailingAnchor.constraint(equalTo: albumsCollectionView.trailingAnchor).isActive = true
+        mostRelevantRequestsTableView.topAnchor.constraint(equalTo: albumsCollectionView.topAnchor).isActive = true
+        mostRelevantRequestsTableView.bottomAnchor.constraint(equalTo: albumsCollectionView.bottomAnchor).isActive = true
     }
     
-    private func setUpBackgroundView() {
+    private func setUpSearchCollectionBackgroundView() {
         
         bcImageView.contentMode = .bottom
-        bcImageView.frame.size.height = collectionView.frame.size.height / 2
-        bcImageView.frame.size.width = collectionView.frame.size.width / 2
+        bcImageView.frame.size.height = albumsCollectionView.frame.size.height / 2
+        bcImageView.frame.size.width = albumsCollectionView.frame.size.width / 2
         //bcImageView.center = self.view.center
         bcImageView.alpha = 0.5
-        collectionView.backgroundView = bcImageView
+        albumsCollectionView.backgroundView = bcImageView
         
     }
     
@@ -99,7 +101,7 @@ class ViewController: UIViewController {
                 return #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
             }
         }
-        collectionView.backgroundColor = bcColor
+        albumsCollectionView.backgroundColor = bcColor
     }
 
     private func setUpSearchBar() {
@@ -117,8 +119,8 @@ class ViewController: UIViewController {
     
 ///Method for loading more data from api, by the way, variables "page"  and "limit" are responsible for parameter "offset" (for more details see NetworkManager.swift)
     private func loadingMoreData(by term: String) {
-        page =  page + 1
-        nm.getData(by: term, entity: nil, page: page, limit: 20) { (items) in
+        resultsPage =  resultsPage + 1
+        nm.getData(by: term, entity: nil, page: resultsPage, limit: 20) { (items) in
             guard let results = self.searchResults else { return }
             for item in items {
                 if !results.contains(where: {$0.collectionName == item.collectionName}) {
@@ -133,7 +135,7 @@ class ViewController: UIViewController {
     
 }
 
-extension ViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+extension AlbumsViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
@@ -141,7 +143,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDelegateFlow
     
 }
 
-extension ViewController: UICollectionViewDataSource {
+extension AlbumsViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         1
@@ -178,7 +180,7 @@ extension ViewController: UICollectionViewDataSource {
         self.view.isUserInteractionEnabled = false
         guard let searchResults = searchResults else  { return }
         let item = searchResults[indexPath.item]
-        let detailVC = DetailViewController()
+        let detailVC = SongsListViewController()
         guard let collectionName = item.collectionName else { return }
         nm.getData(by: collectionName, entity: "musicTrack", page: 0, limit: 50) { (results) in
             var resultsArray = [SearchItem]()
@@ -201,7 +203,7 @@ extension ViewController: UICollectionViewDataSource {
 
 
 
-extension ViewController: UISearchResultsUpdating {
+extension AlbumsViewController: UISearchResultsUpdating {
     
     
     func updateSearchResults(for searchController: UISearchController) {
@@ -250,11 +252,12 @@ extension ViewController: UISearchResultsUpdating {
        }
 }
 
-extension ViewController: UISearchBarDelegate {
+extension AlbumsViewController: UISearchBarDelegate {
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.becomeFirstResponder()
         mostRelevantRequestsTableView.isHidden = false
-        collectionView.isHidden = true
+        albumsCollectionView.isHidden = true
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -269,20 +272,20 @@ extension ViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         mostRelevantRequestsTableView.isHidden = true
         getDataFromApi(by: searchBar.text!)
-        collectionView.isHidden = false
+        albumsCollectionView.isHidden = false
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         mostRelevantRequestsTableView.isHidden = true
         
-        collectionView.isHidden = false
-        collectionView.backgroundView = bcImageView
-        collectionView.reloadData()
+        albumsCollectionView.isHidden = false
+        albumsCollectionView.backgroundView = bcImageView
+        albumsCollectionView.reloadData()
     }
     
 }
 
-extension ViewController: UITableViewDataSource, UITableViewDelegate {
+extension AlbumsViewController: UITableViewDataSource, UITableViewDelegate {
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
