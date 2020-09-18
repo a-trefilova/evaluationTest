@@ -10,6 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var mostRelevantRequestsTableView: UITableView!
     @IBOutlet weak var collectionView: UICollectionView!
 
     var searchResults: [SearchItem]? {
@@ -29,7 +30,11 @@ class ViewController: UIViewController {
     }
     var nm = NetworkManager()
     var page: Int = 0
-    
+    var mostRelevantResultsStrings: [String]? {
+        didSet {
+            print("RESULTS ARE HERE")
+        }
+    }
     
     private let bcImageView: UIImageView = {
         let imageView = UIImageView()
@@ -45,12 +50,15 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.mostRelevantRequestsTableView.dataSource = self
+        self.mostRelevantRequestsTableView.delegate = self
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
         collectionView.register(UINib(nibName: "SearchCell", bundle: nil), forCellWithReuseIdentifier: SearchCell.reuseId)
         setUpSearchBar()
         setUpBackgroundView()
         setUpCollectionView()
+        setUpTableViewConstraints()
         //setUpNavBar()
     }
     
@@ -59,6 +67,13 @@ class ViewController: UIViewController {
             bcImageView.isHidden = false
 
         
+    }
+    
+    private func setUpTableViewConstraints() {
+        mostRelevantRequestsTableView.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor).isActive = true
+        mostRelevantRequestsTableView.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor).isActive = true
+        mostRelevantRequestsTableView.topAnchor.constraint(equalTo: collectionView.topAnchor).isActive = true
+        mostRelevantRequestsTableView.bottomAnchor.constraint(equalTo: collectionView.bottomAnchor).isActive = true
     }
     
     private func setUpBackgroundView() {
@@ -153,13 +168,14 @@ extension ViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let padding: CGFloat = 30
+        let padding: CGFloat = 0
         let collectonViewSize = collectionView.frame.size.width - padding
         return CGSize(width: collectonViewSize/2, height: collectonViewSize/2)
     }
 
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        self.view.isUserInteractionEnabled = false
         guard let searchResults = searchResults else  { return }
         let item = searchResults[indexPath.item]
         let detailVC = DetailViewController()
@@ -175,6 +191,7 @@ extension ViewController: UICollectionViewDataSource {
                 detailVC.searchItems = resultsArray
                 detailVC.loadViewIfNeeded()
                 self.navigationController?.pushViewController(detailVC, animated: true)
+                self.view.isUserInteractionEnabled = true
             }
             
         }
@@ -188,9 +205,8 @@ extension ViewController: UISearchResultsUpdating {
     
     
     func updateSearchResults(for searchController: UISearchController) {
-        if let text = searchController.searchBar.text, text.count > 0 {
-        getDataFromApi(by: searchController.searchBar.text!)
-        }
+        guard searchController.searchBar.text!.count > 0 else { return }
+        prepareDataForDatasource(by: searchController.searchBar.text!)
     }
     
     private func getDataFromApi(by word: String) {
@@ -204,12 +220,45 @@ extension ViewController: UISearchResultsUpdating {
             self.searchResults = resultsArray
         }
     }
+    
+    private func prepareDataForDatasource(by string: String) {
+           guard string.count > 3 else { return }
+           nm.getData(by: string, entity: "album", page: 0, limit: 20) { (results) in
+               var data = [String]()
+            
+               for item in results {
+                    guard let name = item.collectionName else { return }
+                    if name.contains(string) {
+                        data.append(name)
+                    }
+               }
+            
+                if data.count > 4 {
+                    let first = data[0]
+                    let second = data[1]
+                    let third = data[2]
+                    let fourth = data[3]
+                    data = [first, second, third, fourth]
+                }
+                self.mostRelevantResultsStrings = data
+                DispatchQueue.main.async {
+                    self.mostRelevantRequestsTableView.reloadData()
+                }
+            
+           }
+           
+       }
 }
 
 extension ViewController: UISearchBarDelegate {
 
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        mostRelevantRequestsTableView.isHidden = false
+        collectionView.isHidden = true
+    }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        mostRelevantRequestsTableView.reloadData()
         bcImageView.isHidden = true
         guard let text = searchBar.text else {
             bcImageView.isHidden = false
@@ -217,4 +266,48 @@ extension ViewController: UISearchBarDelegate {
         }
     }
 
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        mostRelevantRequestsTableView.isHidden = true
+        getDataFromApi(by: searchBar.text!)
+        collectionView.isHidden = false
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        mostRelevantRequestsTableView.isHidden = true
+        
+        collectionView.isHidden = false
+        collectionView.backgroundView = bcImageView
+        collectionView.reloadData()
+    }
+    
+}
+
+extension ViewController: UITableViewDataSource, UITableViewDelegate {
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let strings = mostRelevantResultsStrings else { return 0 }
+        return  strings.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: "tableCell")
+        guard let strings = mostRelevantResultsStrings else { return cell }
+        cell.textLabel?.text = strings[indexPath.row]
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let strings = mostRelevantResultsStrings else { return }
+        let string = strings[indexPath.row]
+        searchController.searchBar.text = string
+        searchController.searchBar.endEditing(true)
+        self.searchBarSearchButtonClicked(searchController.searchBar)
+        
+    }
+    
+   
+    
 }
